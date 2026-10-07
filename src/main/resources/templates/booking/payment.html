@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Secure Payment Checkout - AutoDrive')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5">
+        <!-- Step Indicator -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center text-center">
+                    <div class="flex-fill">
+                        <div class="rounded-circle bg-success text-white mx-auto d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;"><i class="fas fa-check"></i></div>
+                        <span class="small fw-semibold text-muted mt-1 d-block">Reservation Details</span>
+                    </div>
+                    <div class="flex-fill border-top border-2 border-primary"></div>
+                    <div class="flex-fill">
+                        <div class="rounded-circle bg-primary text-white mx-auto d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">2</div>
+                        <span class="small fw-bold text-primary mt-1 d-block">Payment & Guarantee</span>
+                    </div>
+                    <div class="flex-fill border-top border-2 border-secondary border-opacity-25"></div>
+                    <div class="flex-fill">
+                        <div class="rounded-circle bg-secondary bg-opacity-25 text-secondary mx-auto d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">3</div>
+                        <span class="small text-muted mt-1 d-block">Confirmed & Invoice</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <!-- Left: Payment Form & Gateway Selector -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0">Secure Payment Checkout</h4>
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold">
+                            <i class="fas fa-lock me-1"></i> 256-Bit SSL Encrypted
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-4">Complete your payment below to confirm and finalize your booking.</p>
+
+                    <form th:action="@{/payment/process}" th:object="${paymentRequest}" method="post" id="paymentForm">
+                        <input type="hidden" th:field="*{bookingId}">
+
+                        <!-- Sandbox Mode Alert & Simulation Control -->
+                        <div class="card border-primary border-opacity-25 bg-primary bg-opacity-10 p-3 rounded-3 mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="fw-bold text-primary small"><i class="fas fa-vial me-1"></i> Sandbox Test Gateway Architecture</span>
+                                <span class="badge bg-primary">Local Dev Mode</span>
+                            </div>
+                            <p class="text-secondary small mb-2">
+                                You can safely simulate different payment outcomes without real credit cards or third-party merchant accounts:
+                            </p>
+                            <div class="d-flex gap-4 small fw-semibold">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" th:field="*{testOutcome}" id="outcomeSuccess" value="SUCCESS" checked>
+                                    <label class="form-check-label text-success" for="outcomeSuccess">
+                                        <i class="fas fa-check-circle me-1"></i> Simulate SUCCESSFUL Payment
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" th:field="*{testOutcome}" id="outcomeFailed" value="FAILED">
+                                    <label class="form-check-label text-danger" for="outcomeFailed">
+                                        <i class="fas fa-times-circle me-1"></i> Simulate DECLINED / FAILED Payment
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="testOutcomeNotice" class="alert alert-success py-2 mt-2 mb-0 small">
+                                Sandbox Mode: Simulation configured to process payment successfully.
+                            </div>
+                        </div>
+
+                        <!-- Payment Method Radios -->
+                        <label class="form-label small fw-semibold text-muted">Select Payment Method</label>
+                        <div class="row g-2 mb-4">
+                            <div class="col-6">
+                                <label class="border rounded-3 p-3 d-flex align-items-center gap-3 w-100 cursor-pointer bg-light">
+                                    <input type="radio" th:field="*{paymentMethod}" value="CREDIT_CARD" checked class="form-check-input mt-0">
+                                    <div>
+                                        <strong class="d-block small text-dark">Credit / Debit Card</strong>
+                                        <span class="text-muted" style="font-size: 11px;">Visa, Mastercard, Amex</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <label class="border rounded-3 p-3 d-flex align-items-center gap-3 w-100 cursor-pointer bg-light">
+                                    <input type="radio" th:field="*{paymentMethod}" value="RAZORPAY_SANDBOX" class="form-check-input mt-0">
+                                    <div>
+                                        <strong class="d-block small text-dark">Razorpay / Stripe Gateway</strong>
+                                        <span class="text-muted" style="font-size: 11px;">Sandbox API flow</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Mock Card Fields (Pre-populated for zero friction) -->
+                        <div class="p-3 border rounded-3 bg-white mb-4">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-muted">Cardholder Name</label>
+                                <input type="text" th:field="*{cardHolder}" class="form-control" value="JOHN DOE" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-muted">Card Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-credit-card text-muted"></i></span>
+                                    <input type="text" th:field="*{cardNumber}" class="form-control" value="4111 2222 3333 4444" required>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold text-muted">Expiration Date</label>
+                                    <input type="text" th:field="*{expiryDate}" class="form-control" value="12/28" placeholder="MM/YY" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small fw-semibold text-muted">Security CVV</label>
+                                    <input type="password" th:field="*{cvv}" class="form-control" value="123" placeholder="CVV" maxlength="4" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 fw-bold fs-6">
+                            <i class="fas fa-shield-alt me-2"></i> Authorize & Pay $<span th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 2, 'POINT')}">285.00</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right: Order Breakdown -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 85px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Booking Details</h5>
+                        <span class="badge bg-secondary" th:text="${booking.bookingNumber}">BK-123</span>
+                    </div>
+
+                    <div class="d-flex gap-3 align-items-center mb-3 p-2 bg-light rounded-3">
+                        <img th:src="${booking.vehicle.imageUrl != null && !booking.vehicle.imageUrl.isEmpty() ? booking.vehicle.imageUrl : 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=200&q=80'}"
+                             th:alt="${booking.vehicle.displayName}" class="rounded-2 object-fit-cover" style="width: 75px; height: 55px;">
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark" th:text="${booking.vehicle.displayName}">Toyota Corolla</h6>
+                            <span class="text-muted small" th:text="${booking.vehicle.category}">Economy</span>
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-3 small text-muted">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Pickup Date:</span>
+                            <strong class="text-dark" th:text="${#temporals.format(booking.pickupDate, 'MMM dd, yyyy')}">Oct 01, 2026</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Return Date:</span>
+                            <strong class="text-dark" th:text="${#temporals.format(booking.returnDate, 'MMM dd, yyyy')}">Oct 04, 2026</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Pickup Hub:</span>
+                            <span class="text-dark" th:text="${booking.pickupLocation}">Downtown Hub</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Return Hub:</span>
+                            <span class="text-dark" th:text="${booking.returnLocation}">Downtown Hub</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between fw-bold border-top pt-3 text-dark fs-5">
+                            <span>Amount Due:</span>
+                            <span class="text-primary" th:text="'$' + ${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 2, 'POINT')}">$285.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

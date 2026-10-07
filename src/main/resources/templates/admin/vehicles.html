@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Fleet Management - Admin')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container-fluid px-lg-5 my-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb small mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" class="text-decoration-none">Admin</a></li>
+                        <li class="breadcrumb-item active">Fleet</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold mb-0">Vehicle Fleet Management</h2>
+            </div>
+            <a th:href="@{/admin/vehicles/add}" class="btn btn-primary-custom btn-sm">
+                <i class="fas fa-plus me-1"></i> Add New Vehicle
+            </a>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show small" role="alert">
+            <i class="fas fa-check-circle me-1"></i> <span th:text="${successMessage}">Success</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show small" role="alert">
+            <i class="fas fa-exclamation-circle me-1"></i> <span th:text="${errorMessage}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light text-muted">
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>License Plate</th>
+                            <th>Category</th>
+                            <th>Specs</th>
+                            <th>Daily Rate</th>
+                            <th>Status</th>
+                            <th>Availability</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${vehicles}">
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img th:src="${v.imageUrl != null && !v.imageUrl.isEmpty() ? v.imageUrl : 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=100&q=80'}"
+                                         class="rounded-2 object-fit-cover" style="width: 48px; height: 36px;">
+                                    <div>
+                                        <strong class="text-dark d-block" th:text="${v.displayName}">Toyota Corolla</strong>
+                                        <span class="text-muted" style="font-size: 11px;" th:text="${v.color}">Silver</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="font-monospace fw-semibold" th:text="${v.licensePlate}">NY-1234</span></td>
+                            <td><span class="badge bg-light text-dark border" th:text="${v.category}">ECONOMY</span></td>
+                            <td>
+                                <span th:text="${v.seats + ' seats &bull; ' + v.transmission + ' &bull; ' + v.fuelType}">5 seats &bull; AUTO</span>
+                            </td>
+                            <td>
+                                <strong class="text-primary" th:text="'$' + ${#numbers.formatDecimal(v.pricePerDay, 0, 'COMMA', 2, 'POINT')}">$45.00</strong>
+                            </td>
+                            <td>
+                                <form th:action="@{'/admin/vehicles/status/' + ${v.id}}" method="post" class="d-inline">
+                                    <select name="status" class="form-select form-select-sm py-0 px-2" style="font-size: 12px; width: 130px;" onchange="this.form.submit()">
+                                        <option value="AVAILABLE" th:selected="${v.status.name() == 'AVAILABLE'}">AVAILABLE</option>
+                                        <option value="RENTED" th:selected="${v.status.name() == 'RENTED'}">RENTED</option>
+                                        <option value="MAINTENANCE" th:selected="${v.status.name() == 'MAINTENANCE'}">MAINTENANCE</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td>
+                                <form th:action="@{'/admin/vehicles/toggle/' + ${v.id}}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm py-0 px-2"
+                                            th:classappend="${v.isAvailable} ? 'btn-outline-success' : 'btn-outline-secondary'"
+                                            style="font-size: 11px;">
+                                        <i class="fas" th:classappend="${v.isAvailable} ? 'fa-toggle-on' : 'fa-toggle-off'"></i>
+                                        <span th:text="${v.isAvailable} ? 'Active' : 'Disabled'">Active</span>
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-1">
+                                    <a th:href="@{'/vehicles/' + ${v.id}}" class="btn btn-outline-info btn-sm py-1 px-2" title="Public View" target="_blank">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                    <a th:href="@{'/admin/vehicles/edit/' + ${v.id}}" class="btn btn-outline-primary btn-sm py-1 px-2" title="Edit Vehicle">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form th:action="@{'/admin/vehicles/delete/' + ${v.id}}" method="post" class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to delete this vehicle from the fleet?');">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2" title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

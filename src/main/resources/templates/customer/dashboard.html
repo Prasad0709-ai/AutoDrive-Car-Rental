@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Customer Dashboard - AutoDrive')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5">
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="dashboard-sidebar">
+                    <div class="text-center mb-4 pb-3 border-bottom">
+                        <div class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center mb-2" style="width: 64px; height: 64px; font-size: 24px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h5 class="fw-bold mb-0 text-dark" th:text="${user.fullName}">John Doe</h5>
+                        <span class="text-muted small" th:text="${user.email}">john@example.com</span>
+                    </div>
+
+                    <nav class="nav flex-column">
+                        <a th:href="@{/dashboard}" class="dashboard-sidebar-link active">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard Overview
+                        </a>
+                        <a th:href="@{/my-bookings}" class="dashboard-sidebar-link">
+                            <i class="fas fa-calendar-alt"></i> My Bookings
+                        </a>
+                        <a th:href="@{/vehicles}" class="dashboard-sidebar-link">
+                            <i class="fas fa-car"></i> Reserve a Vehicle
+                        </a>
+                        <a th:href="@{/profile}" class="dashboard-sidebar-link">
+                            <i class="fas fa-user-cog"></i> Account Settings
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h3 class="fw-bold mb-1">Customer Dashboard</h3>
+                        <p class="text-muted small mb-0">Manage your active itineraries and view past vehicle rentals</p>
+                    </div>
+                    <a th:href="@{/vehicles}" class="btn btn-primary-custom btn-sm">
+                        <i class="fas fa-plus me-1"></i> New Reservation
+                    </a>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small fw-semibold">Total Bookings</span>
+                                    <h3 class="fw-bold mb-0 text-dark" th:text="${totalBookings}">1</h3>
+                                </div>
+                                <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                    <i class="fas fa-folder"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small fw-semibold">Active Rentals</span>
+                                    <h3 class="fw-bold mb-0 text-success" th:text="${activeBookings}">0</h3>
+                                </div>
+                                <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small fw-semibold">Pending Payments</span>
+                                    <h3 class="fw-bold mb-0 text-warning" th:text="${pendingBookings}">0</h3>
+                                </div>
+                                <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small fw-semibold">Completed</span>
+                                    <h3 class="fw-bold mb-0 text-info" th:text="${completedBookings}">1</h3>
+                                </div>
+                                <div class="stat-icon bg-info bg-opacity-10 text-info">
+                                    <i class="fas fa-check-double"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings Table -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Recent Bookings</h5>
+                        <a th:href="@{/my-bookings}" class="text-primary small text-decoration-none fw-semibold">
+                            View All Bookings <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(recentBookings)}" class="text-center py-5 text-muted small">
+                        <i class="fas fa-calendar-times fs-2 mb-2 text-muted"></i>
+                        <p class="mb-0">You have no reservation records yet.</p>
+                        <a th:href="@{/vehicles}" class="btn btn-outline-primary btn-sm rounded-pill mt-3 px-3">Browse Available Fleet</a>
+                    </div>
+
+                    <div class="table-responsive" th:unless="${#lists.isEmpty(recentBookings)}">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light small text-muted">
+                                <tr>
+                                    <th>Booking Ref</th>
+                                    <th>Vehicle</th>
+                                    <th>Dates</th>
+                                    <th>Total</th>
+                                    <th>Booking Status</th>
+                                    <th>Payment</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="small">
+                                <tr th:each="b : ${recentBookings}">
+                                    <td><strong class="text-primary" th:text="${b.bookingNumber}">BK-1002</strong></td>
+                                    <td>
+                                        <div class="fw-semibold text-dark" th:text="${b.vehicle.displayName}">Toyota Corolla</div>
+                                        <span class="text-muted" style="font-size: 11px;" th:text="${b.vehicle.licensePlate}">Plate</span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${#temporals.format(b.pickupDate, 'MMM dd')} + ' - ' + ${#temporals.format(b.returnDate, 'MMM dd, yyyy')}">Dates</span>
+                                    </td>
+                                    <td><strong th:text="'$' + ${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 2, 'POINT')}">$285.00</strong></td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${b.status.name() == 'CONFIRMED' || b.status.name() == 'COMPLETED'} ? 'bg-success' : (${b.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                              th:text="${b.status}">CONFIRMED</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${b.paymentStatus.name() == 'PAID'} ? 'bg-primary' : (${b.paymentStatus.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-secondary')"
+                                              th:text="${b.paymentStatus}">PAID</span>
+                                    </td>
+                                    <td>
+                                        <a th:href="@{'/my-bookings/' + ${b.id}}" class="btn btn-outline-primary btn-sm py-1 px-2">
+                                            Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Payment Confirmed - AutoDrive Rentals')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5 py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white text-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 text-success p-3 d-inline-flex justify-content-center align-items-center mx-auto mb-3" style="width: 72px; height: 72px;">
+                        <i class="fas fa-check-circle fs-1"></i>
+                    </div>
+
+                    <h2 class="fw-bold text-dark mb-1">Payment Successful!</h2>
+                    <p class="text-muted small mb-4">Your car rental reservation has been officially confirmed and registered in our fleet system.</p>
+
+                    <!-- Receipt Summary Box -->
+                    <div class="p-4 bg-light rounded-3 text-start mb-4">
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Booking Reference:</span>
+                            <strong class="text-primary" th:text="${booking.bookingNumber}">BK-202610-12345</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Transaction ID:</span>
+                            <span class="font-monospace" th:text="${booking.payment != null ? booking.payment.transactionId : 'TXN-DEMO-001'}">TXN-998877</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Vehicle:</span>
+                            <strong th:text="${booking.vehicle.displayName}">Toyota Corolla</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Rental Schedule:</span>
+                            <span th:text="${#temporals.format(booking.pickupDate, 'MMM dd, yyyy') + ' to ' + #temporals.format(booking.returnDate, 'MMM dd, yyyy')}">Oct 01 to Oct 04</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Status:</span>
+                            <span class="badge bg-success">CONFIRMED &bull; PAID</span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between fw-bold text-dark">
+                            <span>Amount Paid:</span>
+                            <span class="text-success fs-5" th:text="'$' + ${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 2, 'POINT')}">$285.00</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                        <a th:href="@{'/invoice/' + ${booking.id}}" class="btn btn-outline-primary py-2 px-4 fw-semibold">
+                            <i class="fas fa-file-invoice me-1"></i> View / Print Invoice
+                        </a>
+                        <a th:href="@{'/invoice/' + ${booking.id} + '/download'}" class="btn btn-outline-secondary py-2 px-4 fw-semibold">
+                            <i class="fas fa-download me-1"></i> Download Invoice
+                        </a>
+                        <a th:href="@{/my-bookings}" class="btn btn-primary-custom py-2 px-4 fw-semibold">
+                            <i class="fas fa-tachometer-alt me-1"></i> My Bookings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Confirm Booking - AutoDrive Rentals')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5">
+        <!-- Step Indicator -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-8">
+                <div class="d-flex justify-content-between align-items-center text-center">
+                    <div class="flex-fill">
+                        <div class="rounded-circle bg-primary text-white mx-auto d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">1</div>
+                        <span class="small fw-bold text-primary mt-1 d-block">Reservation Details</span>
+                    </div>
+                    <div class="flex-fill border-top border-2 border-primary"></div>
+                    <div class="flex-fill">
+                        <div class="rounded-circle bg-secondary bg-opacity-25 text-secondary mx-auto d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">2</div>
+                        <span class="small text-muted mt-1 d-block">Payment & Guarantee</span>
+                    </div>
+                    <div class="flex-fill border-top border-2 border-secondary border-opacity-25"></div>
+                    <div class="flex-fill">
+                        <div class="rounded-circle bg-secondary bg-opacity-25 text-secondary mx-auto d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px;">3</div>
+                        <span class="small text-muted mt-1 d-block">Confirmed & Invoice</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <!-- Left: Reservation Form -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                    <h4 class="fw-bold mb-1">Review & Confirm Your Reservation</h4>
+                    <p class="text-muted small mb-4">Please verify your rental itinerary and location details below.</p>
+
+                    <form th:action="@{/bookings}" th:object="${bookingRequest}" method="post">
+                        <input type="hidden" th:field="*{vehicleId}">
+
+                        <!-- Dates -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Pickup Date *</label>
+                                <input type="date" th:field="*{pickupDate}" class="form-control" required readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Return Date *</label>
+                                <input type="date" th:field="*{returnDate}" class="form-control" required readonly>
+                            </div>
+                        </div>
+
+                        <!-- Locations -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Pickup Location *</label>
+                                <input type="text" th:field="*{pickupLocation}" class="form-control" placeholder="e.g. JFK Airport or Downtown Hub" required>
+                                <div class="invalid-feedback d-block" th:errors="*{pickupLocation}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Return Location *</label>
+                                <input type="text" th:field="*{returnLocation}" class="form-control" placeholder="e.g. JFK Airport or Downtown Hub" required>
+                                <div class="invalid-feedback d-block" th:errors="*{returnLocation}"></div>
+                            </div>
+                        </div>
+
+                        <!-- Driver Details (Pre-filled from Account) -->
+                        <div class="p-3 bg-light rounded-3 my-4">
+                            <h6 class="fw-bold mb-2 small text-uppercase text-muted"><i class="fas fa-id-card text-primary me-1"></i> Designated Primary Driver</h6>
+                            <div class="row g-2 small">
+                                <div class="col-md-6"><strong>Full Name:</strong> <span th:text="${user.fullName}">John Doe</span></div>
+                                <div class="col-md-6"><strong>Email:</strong> <span th:text="${user.email}">john@example.com</span></div>
+                                <div class="col-md-6"><strong>Phone:</strong> <span th:text="${user.phone != null ? user.phone : 'Not provided'}">+1 555-1234</span></div>
+                                <div class="col-md-6"><strong>Driver's License:</strong> <span th:text="${user.driversLicense != null ? user.driversLicense : 'Pending check at counter'}">DL-1234</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Notes -->
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold text-muted">Special Requests / Notes (Optional)</label>
+                            <textarea th:field="*{notes}" class="form-control" rows="2" placeholder="Child seat, late arrival flight info, or handoff preferences..."></textarea>
+                        </div>
+
+                        <div class="form-check mb-4 small">
+                            <input class="form-check-input" type="checkbox" id="policyAgreement" required checked>
+                            <label class="form-check-label text-muted" for="policyAgreement">
+                                I confirm the driver holds a valid driver's license and agree to the <a th:href="@{/terms}" target="_blank" class="text-primary">rental terms</a> and security deposit hold.
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom w-100 py-3 fw-semibold">
+                            Confirm & Proceed to Payment <i class="fas fa-arrow-right ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right: Itemized Summary & Price Breakdown -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 85px;">
+                    <h5 class="fw-bold mb-3">Rental Summary</h5>
+
+                    <!-- Vehicle Mini Card -->
+                    <div class="d-flex gap-3 align-items-center mb-3 p-2 bg-light rounded-3">
+                        <img th:src="${vehicle.imageUrl != null && !vehicle.imageUrl.isEmpty() ? vehicle.imageUrl : 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=200&q=80'}"
+                             th:alt="${vehicle.displayName}" class="rounded-2 object-fit-cover" style="width: 80px; height: 60px;">
+                        <div>
+                            <h6 class="fw-bold mb-0 text-dark" th:text="${vehicle.brand + ' ' + vehicle.model}">Toyota Corolla</h6>
+                            <span class="text-muted small" th:text="${vehicle.category + ' &bull; ' + vehicle.year}">Economy &bull; 2023</span>
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-3">
+                        <div class="d-flex justify-content-between small text-muted mb-2">
+                            <span>Daily Rental Rate:</span>
+                            <span class="text-dark fw-semibold" th:text="'$' + ${#numbers.formatDecimal(vehicle.pricePerDay, 0, 'COMMA', 2, 'POINT')} + ' / day'">$45.00 / day</span>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-2">
+                            <span>Rental Duration:</span>
+                            <span class="text-dark fw-semibold" th:text="${rentalDays + (rentalDays == 1 ? ' Day' : ' Days')}">3 Days</span>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-2">
+                            <span>Rental Subtotal:</span>
+                            <span class="text-dark fw-semibold" th:text="'$' + ${#numbers.formatDecimal(vehicle.pricePerDay * rentalDays, 0, 'COMMA', 2, 'POINT')}">$135.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-3">
+                            <span>
+                                Refundable Security Deposit:
+                                <i class="fas fa-info-circle text-muted" title="Refunded upon return following inspection"></i>
+                            </span>
+                            <span class="text-dark fw-semibold" th:text="'$' + ${#numbers.formatDecimal(vehicle.securityDeposit, 0, 'COMMA', 2, 'POINT')}">$150.00</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between fw-bold border-top pt-3 text-dark fs-5">
+                            <span>Total Payable:</span>
+                            <span class="text-primary" th:text="'$' + ${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 2, 'POINT')}">$285.00</span>
+                        </div>
+                        <div class="text-muted small mt-1" style="font-size: 11px;">
+                            * Includes taxes, standard collision damage waiver, and full security deposit.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

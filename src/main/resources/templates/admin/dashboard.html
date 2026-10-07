@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Admin Control Center - AutoDrive')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container-fluid px-lg-5 my-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill fw-bold mb-1">Administrative Console</span>
+                <h2 class="fw-bold mb-0">Fleet & Operations Dashboard</h2>
+            </div>
+            <div class="d-flex gap-2">
+                <a th:href="@{/admin/vehicles/add}" class="btn btn-primary-custom btn-sm">
+                    <i class="fas fa-plus me-1"></i> Add Vehicle
+                </a>
+                <a th:href="@{/admin/maintenance}" class="btn btn-outline-warning text-dark btn-sm fw-semibold">
+                    <i class="fas fa-tools me-1"></i> Maintenance
+                </a>
+            </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="row g-3 mb-4">
+            <!-- Total Revenue -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small fw-semibold">Total Revenue</span>
+                            <h3 class="fw-bold mb-0 text-success" th:text="'$' + ${#numbers.formatDecimal(stats.totalRevenue, 0, 'COMMA', 2, 'POINT')}">$12,450.00</h3>
+                        </div>
+                        <div class="stat-icon bg-success bg-opacity-10 text-success">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Bookings -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small fw-semibold">Total Bookings</span>
+                            <h3 class="fw-bold mb-0 text-dark" th:text="${stats.totalBookings}">24</h3>
+                            <span class="text-muted" style="font-size: 11px;" th:text="${stats.pendingBookings + ' Pending &bull; ' + stats.completedBookings + ' Done'}">2 Pending</span>
+                        </div>
+                        <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fleet Count -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small fw-semibold">Total Vehicles</span>
+                            <h3 class="fw-bold mb-0 text-dark" th:text="${stats.totalVehicles}">10</h3>
+                            <span class="text-success small" style="font-size: 11px;" th:text="${stats.availableVehicles + ' Available for Rent'}">8 Available</span>
+                        </div>
+                        <div class="stat-icon bg-info bg-opacity-10 text-info">
+                            <i class="fas fa-car"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers -->
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small fw-semibold">Registered Accounts</span>
+                            <h3 class="fw-bold mb-0 text-dark" th:text="${stats.totalUsers}">15</h3>
+                            <span class="text-muted" style="font-size: 11px;">Drivers & Admins</span>
+                        </div>
+                        <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Operational KPIs -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="card border-0 p-3 bg-white rounded-3 shadow-sm text-center">
+                    <span class="text-muted small">Vehicles Available</span>
+                    <h4 class="fw-bold text-success mb-0" th:text="${stats.availableVehicles}">8</h4>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 p-3 bg-white rounded-3 shadow-sm text-center">
+                    <span class="text-muted small">Vehicles Rented Out</span>
+                    <h4 class="fw-bold text-primary mb-0" th:text="${stats.rentedVehicles}">1</h4>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 p-3 bg-white rounded-3 shadow-sm text-center">
+                    <span class="text-muted small">In Maintenance</span>
+                    <h4 class="fw-bold text-warning mb-0" th:text="${stats.maintenanceVehicles}">1</h4>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 p-3 bg-white rounded-3 shadow-sm text-center">
+                    <span class="text-muted small">Successful Payments</span>
+                    <h4 class="fw-bold text-dark mb-0" th:text="${stats.successfulPayments}">18</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Recent Bookings Table -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Recent Bookings Log</h5>
+                        <a th:href="@{/admin/bookings}" class="text-primary small fw-semibold text-decoration-none">
+                            Manage All <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 small">
+                            <thead class="table-light text-muted">
+                                <tr>
+                                    <th>Ref</th>
+                                    <th>Customer</th>
+                                    <th>Vehicle</th>
+                                    <th>Dates</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="b : ${recentBookings}">
+                                    <td><strong class="text-primary" th:text="${b.bookingNumber}">BK-1002</strong></td>
+                                    <td th:text="${b.user.fullName}">Customer Name</td>
+                                    <td th:text="${b.vehicle.displayName}">Car Model</td>
+                                    <td th:text="${#temporals.format(b.pickupDate, 'MM/dd') + ' - ' + #temporals.format(b.returnDate, 'MM/dd')}">Dates</td>
+                                    <td><strong th:text="'$' + ${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 2, 'POINT')}">$285.00</strong></td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${b.status.name() == 'CONFIRMED' || b.status.name() == 'COMPLETED'} ? 'bg-success' : (${b.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                              th:text="${b.status}">CONFIRMED</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Maintenance Log -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Fleet Servicing</h5>
+                        <a th:href="@{/admin/maintenance}" class="text-primary small fw-semibold text-decoration-none">View All</a>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(upcomingMaintenance)}" class="text-center py-4 text-muted small">
+                        <i class="fas fa-check-circle text-success fs-3 mb-2"></i>
+                        <p>All fleet vehicles currently certified operational.</p>
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(upcomingMaintenance)}" class="d-flex flex-column gap-3">
+                        <div th:each="m : ${upcomingMaintenance}" class="p-3 bg-light rounded-3 small">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong class="text-dark" th:text="${m.vehicle.displayName}">Car Model</strong>
+                                <span class="badge"
+                                      th:classappend="${m.status.name() == 'COMPLETED'} ? 'bg-success' : (${m.status.name() == 'IN_PROGRESS'} ? 'bg-danger' : 'bg-warning text-dark')"
+                                      th:text="${m.status}">SCHEDULED</span>
+                            </div>
+                            <div class="text-secondary mb-1" th:text="${m.type + ': ' + m.description}">Service note</div>
+                            <div class="text-muted" style="font-size: 11px;">
+                                Date: <span th:text="${#temporals.format(m.maintenanceDate, 'MMM dd, yyyy')}">Date</span> | Cost: $<span th:text="${m.cost}">89.50</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

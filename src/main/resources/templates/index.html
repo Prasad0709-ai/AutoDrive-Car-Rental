@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Home - AutoDrive Rentals')}">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-center text-lg-start">
+        <div class="container position-relative z-1">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-7">
+                    <span class="badge bg-primary bg-opacity-25 text-white border border-primary border-opacity-50 px-3 py-2 rounded-pill fw-semibold mb-3">
+                        <i class="fas fa-bolt text-warning me-1"></i> Seamless Online Vehicle Booking
+                    </span>
+                    <h1 class="hero-title mb-3">Find, Book & Drive Premium Vehicles in Minutes</h1>
+                    <p class="hero-subtitle mb-4">
+                        Experience the freedom of the road with AutoDrive. Choose from our modern fleet of economy, family SUVs, and executive luxury sedans with transparent pricing and zero hidden fees.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                        <a th:href="@{/vehicles}" class="btn btn-warning text-dark fw-bold px-4 py-3 rounded-3 shadow">
+                            <i class="fas fa-car me-2"></i> Explore Fleet Now
+                        </a>
+                        <a th:href="@{/about}" class="btn btn-outline-light px-4 py-3 rounded-3 fw-semibold">
+                            <i class="fas fa-info-circle me-2"></i> How It Works
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block text-center">
+                    <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=700&q=80"
+                         alt="Luxury Executive Sedan" class="img-fluid rounded-4 shadow-lg border border-secondary border-opacity-25">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Floating Search & Availability Banner -->
+    <section class="search-banner-float container">
+        <div class="search-card">
+            <form th:action="@{/vehicles}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small text-muted"><i class="fas fa-map-marker-alt text-primary me-1"></i> Pickup Location</label>
+                    <input type="text" name="pickupLocation" class="form-control" placeholder="City or Airport (e.g. JFK Airport)" value="Main Downtown Hub">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small text-muted"><i class="fas fa-calendar-alt text-primary me-1"></i> Pickup Date</label>
+                    <input type="date" id="pickupDate" name="pickupDate" class="form-control" th:value="${searchDto.pickupDate}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold small text-muted"><i class="fas fa-calendar-check text-primary me-1"></i> Return Date</label>
+                    <input type="date" id="returnDate" name="returnDate" class="form-control" th:value="${searchDto.returnDate}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold small text-muted"><i class="fas fa-shapes text-primary me-1"></i> Vehicle Category</label>
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        <option value="ECONOMY">Economy</option>
+                        <option value="COMPACT">Compact</option>
+                        <option value="SUV">SUV & Crossover</option>
+                        <option value="LUXURY">Executive Luxury</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary-custom w-100 py-2">
+                        <i class="fas fa-search me-1"></i> Find Cars
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Category Shortcuts -->
+    <section class="container mt-5 pt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h6 class="text-primary fw-bold text-uppercase mb-1 tracking-wider">Diverse Vehicle Portfolio</h6>
+                <h2 class="fw-bold m-0">Browse By Category</h2>
+            </div>
+            <a th:href="@{/vehicles}" class="text-primary fw-semibold text-decoration-none small">
+                View All Vehicles <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4 text-center">
+            <div class="col-6 col-md-3">
+                <a th:href="@{/vehicles(category='ECONOMY')}" class="text-decoration-none">
+                    <div class="card p-4 border-0 shadow-sm h-100 rounded-4 hover-lift">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-inline-block mx-auto mb-3" style="width: 64px; height: 64px;">
+                            <i class="fas fa-gas-pump fs-4"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Economy</h6>
+                        <span class="text-muted small">From $45/day &bull; High MPG</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a th:href="@{/vehicles(category='COMPACT')}" class="text-decoration-none">
+                    <div class="card p-4 border-0 shadow-sm h-100 rounded-4 hover-lift">
+                        <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 d-inline-block mx-auto mb-3" style="width: 64px; height: 64px;">
+                            <i class="fas fa-city fs-4"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Compact</h6>
+                        <span class="text-muted small">From $48/day &bull; City agility</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a th:href="@{/vehicles(category='SUV')}" class="text-decoration-none">
+                    <div class="card p-4 border-0 shadow-sm h-100 rounded-4 hover-lift">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3 d-inline-block mx-auto mb-3" style="width: 64px; height: 64px;">
+                            <i class="fas fa-mountain fs-4"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">SUVs & 4x4</h6>
+                        <span class="text-muted small">From $75/day &bull; 5-7 Seats</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-3">
+                <a th:href="@{/vehicles(category='LUXURY')}" class="text-decoration-none">
+                    <div class="card p-4 border-0 shadow-sm h-100 rounded-4 hover-lift">
+                        <div class="bg-dark bg-opacity-10 text-dark rounded-circle p-3 d-inline-block mx-auto mb-3" style="width: 64px; height: 64px;">
+                            <i class="fas fa-gem fs-4"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Executive Luxury</h6>
+                        <span class="text-muted small">From $139/day &bull; Ultimate prestige</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Vehicles Section -->
+    <section class="container my-5 py-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h6 class="text-primary fw-bold text-uppercase mb-1">Ready for the road</h6>
+                <h2 class="fw-bold m-0">Featured Available Vehicles</h2>
+            </div>
+            <a th:href="@{/vehicles}" class="btn btn-outline-primary rounded-pill btn-sm px-3 fw-semibold">
+                Explore Full Catalog
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <div th:each="vehicle : ${featuredVehicles}" class="col-lg-4 col-md-6">
+                <div class="vehicle-card">
+                    <div class="vehicle-card-img-wrapper">
+                        <img th:src="${vehicle.imageUrl != null && !vehicle.imageUrl.isEmpty() ? vehicle.imageUrl : 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=800&q=80'}"
+                             th:alt="${vehicle.displayName}" class="vehicle-card-img">
+                        <span class="vehicle-badge-category" th:text="${vehicle.category}">SEDAN</span>
+                        <span class="vehicle-badge-status badge-available">
+                            <i class="fas fa-check-circle me-1"></i> Available
+                        </span>
+                    </div>
+                    <div class="card-body p-4 d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h5 class="fw-bold mb-0 text-dark" th:text="${vehicle.brand + ' ' + vehicle.model}">Toyota Corolla</h5>
+                                <span class="text-muted small" th:text="${'Model Year: ' + vehicle.year}">2023</span>
+                            </div>
+                            <div class="rating-stars">
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="fw-bold text-dark small" th:text="${vehicle.rating}">4.8</span>
+                                <span class="text-muted small" th:text="'(' + ${vehicle.totalReviews} + ')'">(12)</span>
+                            </div>
+                        </div>
+
+                        <!-- Specifications Chips -->
+                        <div class="d-flex flex-wrap gap-2 my-3">
+                            <span class="spec-chip"><i class="fas fa-users text-primary"></i> <span th:text="${vehicle.seats + ' Seats'}">5 Seats</span></span>
+                            <span class="spec-chip"><i class="fas fa-cog text-primary"></i> <span th:text="${vehicle.transmission}">AUTOMATIC</span></span>
+                            <span class="spec-chip"><i class="fas fa-gas-pump text-primary"></i> <span th:text="${vehicle.fuelType}">PETROL</span></span>
+                        </div>
+
+                        <p class="text-muted small text-truncate-2 mb-4" th:text="${vehicle.description}">
+                            Reliable, fuel-efficient vehicle equipped with high safety rating.
+                        </p>
+
+                        <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
+                            <div>
+                                <span class="vehicle-price-tag" th:text="'$' + ${#numbers.formatDecimal(vehicle.pricePerDay, 0, 'COMMA', 2, 'POINT')}">$45.00</span>
+                                <span class="vehicle-price-unit">/ day</span>
+                            </div>
+                            <a th:href="@{'/vehicles/' + ${vehicle.id}}" class="btn btn-primary-custom btn-sm">
+                                View Details <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="bg-white py-5 my-5 border-top border-bottom">
+        <div class="container py-4 text-center">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-2">Simplicity First</span>
+            <h2 class="fw-bold mb-5">How AutoDrive Works In 4 Simple Steps</h2>
+
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3 fs-3 fw-bold" style="width: 60px; height: 60px;">1</div>
+                        <h5 class="fw-bold mb-2">Select Your Vehicle</h5>
+                        <p class="text-muted small">Filter by dates, brand, seats, and budget to find your ideal ride.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3 fs-3 fw-bold" style="width: 60px; height: 60px;">2</div>
+                        <h5 class="fw-bold mb-2">Choose Dates & Location</h5>
+                        <p class="text-muted small">Specify pickup and dropoff points across major transit locations.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3 fs-3 fw-bold" style="width: 60px; height: 60px;">3</div>
+                        <h5 class="fw-bold mb-2">Confirm & Pay Safely</h5>
+                        <p class="text-muted small">Complete instant sandbox / gateway checkout with real-time receipt generation.</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto mb-3 fs-3 fw-bold" style="width: 60px; height: 60px;">4</div>
+                        <h5 class="fw-bold mb-2">Drive & Enjoy</h5>
+                        <p class="text-muted small">Collect keys at your selected hub and hit the open road with 24/7 support.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="container my-5 py-3">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <h6 class="text-primary fw-bold text-uppercase mb-2">The AutoDrive Advantage</h6>
+                <h2 class="fw-bold mb-4">Why Thousands Of Drivers Trust AutoDrive Daily</h2>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="text-primary fs-3"><i class="fas fa-shield-alt"></i></div>
+                    <div>
+                        <h5 class="fw-bold mb-1">100% Guaranteed Availability</h5>
+                        <p class="text-muted small mb-0">Our real-time backend calendar eliminates double bookings and guarantees your car is clean and ready upon arrival.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="text-primary fs-3"><i class="fas fa-tag"></i></div>
+                    <div>
+                        <h5 class="fw-bold mb-1">Transparent Pricing Without Surprises</h5>
+                        <p class="text-muted small mb-0">No mystery fees or last-minute charges. All daily rates, deposits, and options are calculated openly before you pay.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 mb-4">
+                    <div class="text-primary fs-3"><i class="fas fa-headset"></i></div>
+                    <div>
+                        <h5 class="fw-bold mb-1">24/7 Roadside Assistance & Fleet Care</h5>
+                        <p class="text-muted small mb-0">Every vehicle undergoes rigorous multi-point maintenance before being dispatched to customers.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80"
+                         alt="Porsche Macan on Road" class="img-fluid">
+                    <div class="card-body p-4 bg-dark text-white text-center">
+                        <h5 class="fw-bold text-white mb-1">Join Over 15,000+ Happy Renters</h5>
+                        <p class="text-secondary small mb-0">Experience premium automotive mobility with instant online confirmation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="container my-5 py-4">
+        <div class="bg-primary text-white p-5 rounded-4 shadow-lg text-center position-relative overflow-hidden">
+            <div class="position-relative z-1">
+                <h2 class="fw-bold mb-3">Ready to Hit the Open Road?</h2>
+                <p class="text-white-50 mb-4 max-w-600 mx-auto">
+                    Create an account today to unlock special member rates, quick checkout, and manage all your bookings from your dashboard.
+                </p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a th:href="@{/register}" class="btn btn-warning text-dark fw-bold px-4 py-2 rounded-3">Get Started Now</a>
+                    <a th:href="@{/vehicles}" class="btn btn-outline-light px-4 py-2 rounded-3">Browse Full Catalog</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

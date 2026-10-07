@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Payment Failed - AutoDrive Rentals')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5 py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white text-center">
+                    <div class="rounded-circle bg-danger bg-opacity-10 text-danger p-3 d-inline-flex justify-content-center align-items-center mx-auto mb-3" style="width: 72px; height: 72px;">
+                        <i class="fas fa-times-circle fs-1"></i>
+                    </div>
+
+                    <h2 class="fw-bold text-dark mb-1">Payment Unsuccessful</h2>
+                    <p class="text-danger small mb-4" th:text="${errorMessage}">
+                        Your card transaction could not be authorized by the payment gateway.
+                    </p>
+
+                    <div class="p-4 bg-light rounded-3 text-start mb-4 small">
+                        <h6 class="fw-bold text-dark mb-2">Reservation Saved as PENDING:</h6>
+                        <p class="text-muted mb-2">
+                            Your reservation for <strong th:text="${booking.vehicle.displayName}">Toyota Corolla</strong> (<span th:text="${booking.bookingNumber}">BK-123</span>) remains held temporarily in pending status.
+                        </p>
+                        <p class="text-muted mb-0">
+                            Please check your card balance, verify expiration dates, or try simulating a successful transaction using the sandbox options.
+                        </p>
+                    </div>
+
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                        <a th:href="@{'/payment/' + ${booking.id}}" class="btn btn-primary-custom py-2 px-4 fw-semibold">
+                            <i class="fas fa-redo me-1"></i> Retry Payment
+                        </a>
+                        <a th:href="@{/my-bookings}" class="btn btn-outline-secondary py-2 px-4 fw-semibold">
+                            <i class="fas fa-arrow-left me-1"></i> View My Bookings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

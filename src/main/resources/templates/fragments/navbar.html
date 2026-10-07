@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-car-side text-primary"></i>
+            <span>Auto<span class="text-primary">Drive</span></span>
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/vehicles}">Browse Vehicles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/about}">About Us</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/contact}">Contact</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav align-items-lg-center">
+                <!-- If Not Authenticated -->
+                <li class="nav-item me-2" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/login}">
+                        <i class="fas fa-sign-in-alt me-1"></i> Sign In
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="btn btn-primary-custom" th:href="@{/register}">
+                        <i class="fas fa-user-plus me-1"></i> Register
+                    </a>
+                </li>
+
+                <!-- If Admin -->
+                <li class="nav-item dropdown me-2" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link dropdown-toggle text-primary fw-bold" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-shield-alt me-1"></i> Admin Portal
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="adminDropdown">
+                        <li><a class="dropdown-item" th:href="@{/admin/dashboard}"><i class="fas fa-chart-line me-2 text-primary"></i> Dashboard</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/vehicles}"><i class="fas fa-car me-2 text-primary"></i> Manage Fleet</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/bookings}"><i class="fas fa-calendar-check me-2 text-primary"></i> Manage Bookings</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/users}"><i class="fas fa-users me-2 text-primary"></i> Customer Accounts</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/payments}"><i class="fas fa-credit-card me-2 text-primary"></i> Payment Audit</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/maintenance}"><i class="fas fa-tools me-2 text-primary"></i> Fleet Servicing</a></li>
+                    </ul>
+                </li>
+
+                <!-- If Authenticated (Customer or Admin) -->
+                <li class="nav-item me-2" sec:authorize="hasRole('CUSTOMER')">
+                    <a class="nav-link" th:href="@{/my-bookings}">
+                        <i class="fas fa-calendar-alt me-1"></i> My Bookings
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="rounded-circle bg-primary text-white d-inline-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-size: 13px;">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <span class="fw-semibold" sec:authentication="name">Account</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" th:href="@{/dashboard}"><i class="fas fa-tachometer-alt me-2 text-muted"></i> Dashboard</a></li>
+                        <li><a class="dropdown-item" th:href="@{/profile}"><i class="fas fa-user-cog me-2 text-muted"></i> My Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="m-0">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Invoice #' + ${booking.bookingNumber})}">
+</head>
+<body class="bg-light">
+
+    <div class="container my-5">
+        <!-- Actions Toolbar (Hidden when printing) -->
+        <div class="d-flex justify-content-between align-items-center mb-4 d-print-none">
+            <a th:href="@{/my-bookings}" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Back to My Bookings
+            </a>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary-custom btn-sm" onclick="window.print();">
+                    <i class="fas fa-print me-1"></i> Print Invoice
+                </button>
+                <a th:href="@{'/invoice/' + ${booking.id} + '/download'}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-download me-1"></i> Download File
+                </a>
+            </div>
+        </div>
+
+        <!-- Official Invoice Card -->
+        <div class="card border-0 shadow-lg rounded-4 p-5 bg-white mx-auto" style="max-width: 860px;">
+            <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <i class="fas fa-car-side text-primary fs-3"></i>
+                        <span class="fs-4 fw-bold text-dark">Auto<span class="text-primary">Drive</span></span>
+                    </div>
+                    <p class="text-muted small mb-0">AutoDrive Car Rental Corporation</p>
+                    <p class="text-muted small mb-0">100 Corporate Pkwy, New York, NY</p>
+                    <p class="text-muted small mb-0">support@autodrive.com | +1 (800) 555-0199</p>
+                </div>
+                <div class="text-end">
+                    <h2 class="fw-bold mb-1 text-primary">INVOICE</h2>
+                    <div class="font-monospace fw-bold text-dark fs-5" th:text="${'#' + booking.bookingNumber}">#BK-1002</div>
+                    <div class="text-muted small" th:text="${'Issued: ' + #temporals.format(booking.createdAt, 'MMM dd, yyyy')}">Oct 01, 2026</div>
+                    <div class="mt-2">
+                        <span class="badge px-3 py-1 rounded-pill"
+                              th:classappend="${booking.paymentStatus.name() == 'PAID'} ? 'bg-success' : 'bg-warning text-dark'"
+                              th:text="${booking.paymentStatus}">PAID</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Addresses & Itinerary -->
+            <div class="row g-4 mb-4 small">
+                <div class="col-6">
+                    <h6 class="fw-bold text-uppercase text-muted" style="font-size: 11px;">Billed To</h6>
+                    <div class="fw-bold fs-6 text-dark" th:text="${booking.user.fullName}">John Doe</div>
+                    <div class="text-muted" th:text="${'Email: ' + booking.user.email}">john@example.com</div>
+                    <div class="text-muted" th:text="${'Phone: ' + (booking.user.phone != null ? booking.user.phone : 'N/A')}">Phone</div>
+                    <div class="text-muted" th:text="${'Address: ' + (booking.user.address != null ? booking.user.address : 'N/A')}">Address</div>
+                </div>
+                <div class="col-6 text-end">
+                    <h6 class="fw-bold text-uppercase text-muted" style="font-size: 11px;">Payment & Route Details</h6>
+                    <div class="text-muted">Transaction ID: <span class="font-monospace text-dark fw-bold" th:text="${booking.payment != null ? booking.payment.transactionId : 'N/A'}">TXN-12345</span></div>
+                    <div class="text-muted">Payment Method: <span class="text-dark fw-semibold" th:text="${booking.paymentMethod != null ? booking.paymentMethod : 'CREDIT_CARD'}">CREDIT_CARD</span></div>
+                    <div class="text-muted mt-2">Pickup: <strong class="text-dark" th:text="${#temporals.format(booking.pickupDate, 'MMM dd, yyyy')}">Oct 01</strong> (<span th:text="${booking.pickupLocation}">Hub</span>)</div>
+                    <div class="text-muted">Return: <strong class="text-dark" th:text="${#temporals.format(booking.returnDate, 'MMM dd, yyyy')}">Oct 04</strong> (<span th:text="${booking.returnLocation}">Hub</span>)</div>
+                </div>
+            </div>
+
+            <!-- Line Items Table -->
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light small text-muted">
+                        <tr>
+                            <th>Item & Description</th>
+                            <th class="text-center">Rate / Day</th>
+                            <th class="text-center">Duration</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        <tr>
+                            <td>
+                                <strong class="text-dark" th:text="${booking.vehicle.displayName}">Toyota Corolla</strong>
+                                <div class="text-muted small" th:text="${'License: ' + booking.vehicle.licensePlate + ' | Category: ' + booking.vehicle.category}">Plate</div>
+                            </td>
+                            <td class="text-center" th:text="'$' + ${#numbers.formatDecimal(booking.vehicle.pricePerDay, 0, 'COMMA', 2, 'POINT')}">$45.00</td>
+                            <td class="text-center" th:text="${booking.rentalDays + (booking.rentalDays == 1 ? ' Day' : ' Days')}">3 Days</td>
+                            <td class="text-end fw-semibold" th:text="'$' + ${#numbers.formatDecimal(booking.vehicle.pricePerDay * booking.rentalDays, 0, 'COMMA', 2, 'POINT')}">$135.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong class="text-dark">Refundable Security Deposit</strong>
+                                <div class="text-muted small">Standard authorization hold; released after return vehicle check.</div>
+                            </td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">1 Deposit</td>
+                            <td class="text-end fw-semibold" th:text="'$' + ${#numbers.formatDecimal(booking.vehicle.securityDeposit, 0, 'COMMA', 2, 'POINT')}">$150.00</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end fs-6">Total Billed:</th>
+                            <th class="text-end fs-5 text-primary" th:text="'$' + ${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 2, 'POINT')}">$285.00</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="p-3 bg-light rounded-3 text-muted small text-center">
+                Thank you for driving with AutoDrive! For any invoice questions, please contact billing@autodrive.com.
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

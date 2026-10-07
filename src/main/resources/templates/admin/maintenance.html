@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Fleet Maintenance - Admin')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container-fluid px-lg-5 my-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb small mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" class="text-decoration-none">Admin</a></li>
+                        <li class="breadcrumb-item active">Maintenance</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold mb-0">Fleet Servicing & Maintenance</h2>
+            </div>
+            <button type="button" class="btn btn-primary-custom btn-sm" data-bs-toggle="modal" data-bs-target="#addMaintenanceModal">
+                <i class="fas fa-plus me-1"></i> Schedule Maintenance
+            </button>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show small" role="alert">
+            <i class="fas fa-check-circle me-1"></i> <span th:text="${successMessage}">Success</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show small" role="alert">
+            <i class="fas fa-exclamation-circle me-1"></i> <span th:text="${errorMessage}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light text-muted">
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>Service Type</th>
+                            <th>Description</th>
+                            <th>Scheduled Date</th>
+                            <th>Estimated Cost</th>
+                            <th>Status Transition</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="m : ${maintenanceList}">
+                            <td>
+                                <strong class="d-block text-dark" th:text="${m.vehicle.displayName}">Toyota Corolla</strong>
+                                <span class="text-muted" style="font-size: 11px;" th:text="${m.vehicle.licensePlate}">Plate</span>
+                            </td>
+                            <td><span class="badge bg-light text-dark border" th:text="${m.type}">OIL_CHANGE</span></td>
+                            <td th:text="${m.description}">Routine 15,000-mile synthetic oil change</td>
+                            <td th:text="${#temporals.format(m.maintenanceDate, 'MMM dd, yyyy')}">Date</td>
+                            <td>
+                                <strong class="text-dark" th:text="'$' + ${#numbers.formatDecimal(m.cost != null ? m.cost : 0.0, 0, 'COMMA', 2, 'POINT')}">$89.50</strong>
+                            </td>
+                            <td>
+                                <form th:action="@{'/admin/maintenance/status/' + ${m.id}}" method="post" class="d-inline">
+                                    <select name="status" class="form-select form-select-sm py-0 px-2" style="font-size: 12px; width: 140px;" onchange="this.form.submit()">
+                                        <option value="SCHEDULED" th:selected="${m.status.name() == 'SCHEDULED'}">SCHEDULED</option>
+                                        <option value="IN_PROGRESS" th:selected="${m.status.name() == 'IN_PROGRESS'}">IN_PROGRESS</option>
+                                        <option value="COMPLETED" th:selected="${m.status.name() == 'COMPLETED'}">COMPLETED</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="text-end">
+                                <form th:action="@{'/admin/maintenance/delete/' + ${m.id}}" method="post" class="d-inline"
+                                      onsubmit="return confirm('Remove this maintenance record?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2" title="Delete">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal to Schedule New Maintenance -->
+    <div class="modal fade" id="addMaintenanceModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="modal-title fw-bold" id="modalLabel">Schedule Fleet Maintenance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/admin/maintenance/add}" th:object="${maintenanceDto}" method="post">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Select Vehicle *</label>
+                            <select th:field="*{vehicleId}" class="form-select" required>
+                                <option value="">-- Choose Vehicle --</option>
+                                <option th:each="veh : ${vehicles}" th:value="${veh.id}" th:text="${veh.displayName + ' (' + veh.licensePlate + ')'}"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Maintenance Type *</label>
+                            <select th:field="*{type}" class="form-select" required>
+                                <option value="OIL_CHANGE">Oil Change & Fluid Flush</option>
+                                <option value="TIRE_ROTATION">Tire Rotation & Balance</option>
+                                <option value="INSPECTION">Comprehensive Safety Inspection</option>
+                                <option value="REPAIR">Mechanical / Brake Repair</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Service Date *</label>
+                            <input type="date" th:field="*{maintenanceDate}" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Estimated Cost (USD)</label>
+                            <input type="number" step="0.01" th:field="*{cost}" class="form-control" placeholder="120.00">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Initial Status</label>
+                            <select th:field="*{status}" class="form-select">
+                                <option value="SCHEDULED">SCHEDULED</option>
+                                <option value="IN_PROGRESS">IN_PROGRESS (Flags Car Under Maintenance)</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Description / Notes</label>
+                            <textarea th:field="*{description}" class="form-control" rows="2" placeholder="Describe workshop task..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0 pt-0">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary-custom btn-sm">Save Service Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Payment Audit Log - Admin')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container-fluid px-lg-5 my-5">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb small mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" class="text-decoration-none">Admin</a></li>
+                        <li class="breadcrumb-item active">Payments</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold mb-0">Financial & Payment Audit Log</h2>
+            </div>
+            <div class="card bg-success text-white px-4 py-2 border-0 rounded-3 shadow-sm">
+                <span class="small opacity-75">Gross Revenue Recorded</span>
+                <h4 class="fw-bold mb-0" th:text="'$' + ${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 2, 'POINT')}">$12,450.00</h4>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light text-muted">
+                        <tr>
+                            <th>Payment ID</th>
+                            <th>Transaction ID</th>
+                            <th>Booking Ref</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Paid At</th>
+                            <th class="text-end">Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${payments}">
+                            <td><span class="font-monospace fw-semibold text-primary" th:text="${p.paymentId}">PAY-12345</span></td>
+                            <td><span class="font-monospace text-muted" th:text="${p.transactionId}">TXN-998877</span></td>
+                            <td>
+                                <a th:href="@{'/bookings/' + ${p.booking.id}}" class="fw-bold text-dark text-decoration-none" th:text="${p.booking.bookingNumber}">BK-1002</a>
+                            </td>
+                            <td th:text="${p.booking.user.fullName}">Customer Name</td>
+                            <td>
+                                <strong class="text-dark" th:text="'$' + ${#numbers.formatDecimal(p.amount, 0, 'COMMA', 2, 'POINT')}">$285.00</strong>
+                            </td>
+                            <td><span class="badge bg-light text-dark border" th:text="${p.paymentMethod}">CREDIT_CARD</span></td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${p.status.name() == 'SUCCESS'} ? 'bg-success' : (${p.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                      th:text="${p.status}">SUCCESS</span>
+                            </td>
+                            <td th:text="${p.paidAt != null ? #temporals.format(p.paidAt, 'MMM dd, yyyy HH:mm') : 'N/A'}">Date</td>
+                            <td class="text-end">
+                                <a th:if="${p.booking != null}" th:href="@{'/invoice/' + ${p.booking.id}}" class="btn btn-outline-primary btn-sm py-1 px-2" title="View Invoice">
+                                    <i class="fas fa-file-invoice"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

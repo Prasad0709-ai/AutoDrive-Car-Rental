@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Rental Terms & Policies - AutoDrive')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5 py-3">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white mx-auto" style="max-width: 900px;">
+            <h2 class="fw-bold mb-2">Terms of Service & Rental Policies</h2>
+            <p class="text-muted small mb-4">Last Updated: October 2026 &bull; Task ID: JV-BN-002</p>
+
+            <div class="accordion accordion-flush" id="termsAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingOne">
+                        <button class="accordion-button fw-bold text-dark collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne">
+                            1. Driver Age & License Eligibility
+                        </button>
+                    </h2>
+                    <div id="flush-collapseOne" class="accordion-collapse collapse show">
+                        <div class="accordion-body text-secondary small">
+                            All primary and secondary drivers must be at least 21 years of age and hold a valid, non-expired driver's license held for at least one full calendar year. Renters under age 25 may be subject to a young driver surcharge on selected high-performance categories.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingTwo">
+                        <button class="accordion-button fw-bold text-dark collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo">
+                            2. Security Deposit Authorization & Release
+                        </button>
+                    </h2>
+                    <div id="flush-collapseTwo" class="accordion-collapse collapse">
+                        <div class="accordion-body text-secondary small">
+                            A refundable security deposit is authorized upon booking confirmation based on the vehicle category (Economy: $150, Compact: $150-200, SUV: $250-350, Luxury: $500-600). The deposit is fully released within 3-5 business days following return vehicle inspection with no damages or fuel deficits.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingThree">
+                        <button class="accordion-button fw-bold text-dark collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree">
+                            3. Flexible Cancellation & Refund Policy
+                        </button>
+                    </h2>
+                    <div id="flush-collapseThree" class="accordion-collapse collapse">
+                        <div class="accordion-body text-secondary small">
+                            Bookings in PENDING or CONFIRMED status may be cancelled free of charge prior to scheduled pickup date directly through the customer dashboard. Completed or currently active rentals are non-cancellable. Upon valid cancellation, any paid amounts are marked as REFUNDED.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingFour">
+                        <button class="accordion-button fw-bold text-dark collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour">
+                            4. Fuel & Cleanliness Expectations
+                        </button>
+                    </h2>
+                    <div id="flush-collapseFour" class="accordion-collapse collapse">
+                        <div class="accordion-body text-secondary small">
+                            All combustion and hybrid vehicles are dispatched with a full tank of fuel and should be returned with the equivalent fuel level. Electric vehicles are delivered with at least 80% charge and can be returned with 20% or higher.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

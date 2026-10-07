@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Manage Bookings - Admin')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container-fluid px-lg-5 my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb small mb-1">
+                        <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" class="text-decoration-none">Admin</a></li>
+                        <li class="breadcrumb-item active">Bookings</li>
+                    </ol>
+                </nav>
+                <h2 class="fw-bold mb-0">Booking Dispatch & Reservations</h2>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show small" role="alert">
+            <i class="fas fa-check-circle me-1"></i> <span th:text="${successMessage}">Success</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light text-muted">
+                        <tr>
+                            <th>Booking Ref</th>
+                            <th>Customer</th>
+                            <th>Vehicle</th>
+                            <th>Schedule</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Status Transition</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="b : ${bookings}">
+                            <td><strong class="text-primary" th:text="${b.bookingNumber}">BK-1002</strong></td>
+                            <td>
+                                <strong class="d-block text-dark" th:text="${b.user.fullName}">John Doe</strong>
+                                <span class="text-muted" style="font-size: 11px;" th:text="${b.user.email}">john@example.com</span>
+                            </td>
+                            <td>
+                                <strong class="text-dark d-block" th:text="${b.vehicle.displayName}">Toyota Corolla</strong>
+                                <span class="text-muted" style="font-size: 11px;" th:text="${b.vehicle.licensePlate}">Plate</span>
+                            </td>
+                            <td>
+                                <span th:text="${#temporals.format(b.pickupDate, 'MMM dd, yyyy') + ' &rarr; ' + #temporals.format(b.returnDate, 'MMM dd, yyyy')}">Schedule</span>
+                            </td>
+                            <td>
+                                <strong class="text-dark" th:text="'$' + ${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 2, 'POINT')}">$285.00</strong>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${b.paymentStatus.name() == 'PAID'} ? 'bg-primary' : (${b.paymentStatus.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-secondary')"
+                                      th:text="${b.paymentStatus}">PAID</span>
+                            </td>
+                            <td>
+                                <form th:action="@{'/admin/bookings/status/' + ${b.id}}" method="post" class="d-inline">
+                                    <select name="status" class="form-select form-select-sm py-0 px-2" style="font-size: 12px; width: 140px;" onchange="this.form.submit()">
+                                        <option value="PENDING" th:selected="${b.status.name() == 'PENDING'}">PENDING</option>
+                                        <option value="CONFIRMED" th:selected="${b.status.name() == 'CONFIRMED'}">CONFIRMED</option>
+                                        <option value="ACTIVE" th:selected="${b.status.name() == 'ACTIVE'}">ACTIVE</option>
+                                        <option value="COMPLETED" th:selected="${b.status.name() == 'COMPLETED'}">COMPLETED</option>
+                                        <option value="CANCELLED" th:selected="${b.status.name() == 'CANCELLED'}">CANCELLED</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-1">
+                                    <a th:href="@{'/bookings/' + ${b.id}}" class="btn btn-outline-primary btn-sm py-1 px-2" title="Inspect">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a th:if="${b.paymentStatus.name() == 'PAID'}" th:href="@{'/invoice/' + ${b.id}}" class="btn btn-outline-secondary btn-sm py-1 px-2" title="Invoice">
+                                        <i class="fas fa-receipt"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Vehicle Catalog - AutoDrive Rentals')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5">
+        <!-- Breadcrumb & Header -->
+        <div class="mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb small">
+                    <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Browse Fleet</li>
+                </ol>
+            </nav>
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h2 class="fw-bold mb-1">Our Vehicle Fleet</h2>
+                    <p class="text-muted small mb-0">Browse and book from our curated collection of certified vehicles</p>
+                </div>
+                <div class="text-muted small fw-semibold">
+                    Showing <span class="text-primary fw-bold" th:text="${totalCount}">10</span> vehicles found
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Filter Sidebar -->
+            <div class="col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 85px; z-index: 10;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0"><i class="fas fa-sliders-h text-primary me-2"></i> Filters</h5>
+                        <a th:href="@{/vehicles}" class="text-muted small text-decoration-none">Clear All</a>
+                    </div>
+
+                    <form th:action="@{/vehicles}" method="get" id="filterForm">
+                        <!-- Dates Filter -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Pickup Date</label>
+                            <input type="date" id="pickupDate" name="pickupDate" class="form-control form-control-sm" th:value="${searchDto.pickupDate}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Return Date</label>
+                            <input type="date" id="returnDate" name="returnDate" class="form-control form-control-sm" th:value="${searchDto.returnDate}">
+                        </div>
+
+                        <!-- Category -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Category</label>
+                            <select name="category" class="form-select form-select-sm">
+                                <option value="">All Categories</option>
+                                <option value="ECONOMY" th:selected="${searchDto.category != null && searchDto.category.name() == 'ECONOMY'}">Economy</option>
+                                <option value="COMPACT" th:selected="${searchDto.category != null && searchDto.category.name() == 'COMPACT'}">Compact</option>
+                                <option value="SUV" th:selected="${searchDto.category != null && searchDto.category.name() == 'SUV'}">SUV</option>
+                                <option value="LUXURY" th:selected="${searchDto.category != null && searchDto.category.name() == 'LUXURY'}">Luxury</option>
+                            </select>
+                        </div>
+
+                        <!-- Fuel Type -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Fuel Type</label>
+                            <select name="fuelType" class="form-select form-select-sm">
+                                <option value="">All Fuel Types</option>
+                                <option value="PETROL" th:selected="${searchDto.fuelType != null && searchDto.fuelType.name() == 'PETROL'}">Petrol</option>
+                                <option value="DIESEL" th:selected="${searchDto.fuelType != null && searchDto.fuelType.name() == 'DIESEL'}">Diesel</option>
+                                <option value="ELECTRIC" th:selected="${searchDto.fuelType != null && searchDto.fuelType.name() == 'ELECTRIC'}">Electric</option>
+                            </select>
+                        </div>
+
+                        <!-- Transmission -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Transmission</label>
+                            <select name="transmission" class="form-select form-select-sm">
+                                <option value="">Any Transmission</option>
+                                <option value="AUTOMATIC" th:selected="${searchDto.transmission != null && searchDto.transmission.name() == 'AUTOMATIC'}">Automatic</option>
+                                <option value="MANUAL" th:selected="${searchDto.transmission != null && searchDto.transmission.name() == 'MANUAL'}">Manual</option>
+                            </select>
+                        </div>
+
+                        <!-- Min Seats -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Minimum Seats</label>
+                            <select name="seats" class="form-select form-select-sm">
+                                <option value="">Any Capacity</option>
+                                <option value="4" th:selected="${searchDto.seats == 4}">4+ Seats</option>
+                                <option value="5" th:selected="${searchDto.seats == 5}">5+ Seats</option>
+                                <option value="7" th:selected="${searchDto.seats == 7}">7+ Seats</option>
+                            </select>
+                        </div>
+
+                        <!-- Max Price -->
+                        <div class="mb-4">
+                            <label class="form-label small fw-semibold text-muted">Max Price Per Day</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="maxPrice" class="form-control" placeholder="e.g. 100" th:value="${searchDto.maxPrice}">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom w-100 btn-sm">
+                            <i class="fas fa-filter me-1"></i> Apply Filters
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Vehicle Grid -->
+            <div class="col-lg-9">
+                <div th:if="${#lists.isEmpty(vehicles)}" class="card border-0 p-5 text-center shadow-sm rounded-4">
+                    <div class="py-5">
+                        <i class="fas fa-car-crash text-muted fs-1 mb-3"></i>
+                        <h4 class="fw-bold">No Vehicles Match Your Filter</h4>
+                        <p class="text-muted small">Try broadening your search criteria or clearing selected dates.</p>
+                        <a th:href="@{/vehicles}" class="btn btn-outline-primary btn-sm rounded-pill px-4 mt-2">Reset Filters</a>
+                    </div>
+                </div>
+
+                <div class="row g-4" th:unless="${#lists.isEmpty(vehicles)}">
+                    <div th:each="vehicle : ${vehicles}" class="col-md-6">
+                        <div class="vehicle-card">
+                            <div class="vehicle-card-img-wrapper">
+                                <img th:src="${vehicle.imageUrl != null && !vehicle.imageUrl.isEmpty() ? vehicle.imageUrl : 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=800&q=80'}"
+                                     th:alt="${vehicle.displayName}" class="vehicle-card-img">
+                                <span class="vehicle-badge-category" th:text="${vehicle.category}">SEDAN</span>
+                                <span class="vehicle-badge-status"
+                                      th:classappend="${vehicle.status.name() == 'AVAILABLE'} ? 'badge-available' : (${vehicle.status.name() == 'RENTED'} ? 'badge-rented' : 'badge-maintenance')">
+                                    <span th:text="${vehicle.status}">AVAILABLE</span>
+                                </span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h5 class="fw-bold mb-0 text-dark" th:text="${vehicle.brand + ' ' + vehicle.model}">Toyota Corolla</h5>
+                                        <span class="text-muted small" th:text="${'Model Year: ' + vehicle.year + ' &bull; ' + vehicle.color}">2023 &bull; Silver</span>
+                                    </div>
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <span class="fw-bold text-dark small" th:text="${vehicle.rating}">4.8</span>
+                                        <span class="text-muted small" th:text="'(' + ${vehicle.totalReviews} + ')'">(12)</span>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-2 my-2">
+                                    <span class="spec-chip"><i class="fas fa-users text-primary"></i> <span th:text="${vehicle.seats + ' Seats'}">5 Seats</span></span>
+                                    <span class="spec-chip"><i class="fas fa-cog text-primary"></i> <span th:text="${vehicle.transmission}">AUTOMATIC</span></span>
+                                    <span class="spec-chip"><i class="fas fa-gas-pump text-primary"></i> <span th:text="${vehicle.fuelType}">PETROL</span></span>
+                                </div>
+
+                                <p class="text-muted small my-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" th:text="${vehicle.description}">
+                                    Clean, fuel-efficient daily driver equipped with latest safety features.
+                                </p>
+
+                                <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="vehicle-price-tag" th:text="'$' + ${#numbers.formatDecimal(vehicle.pricePerDay, 0, 'COMMA', 2, 'POINT')}">$45.00</span>
+                                        <span class="vehicle-price-unit">/ day</span>
+                                        <div class="text-muted" style="font-size: 11px;" th:text="'Deposit: $' + ${#numbers.formatDecimal(vehicle.securityDeposit, 0, 'COMMA', 2, 'POINT')}">Deposit: $150</div>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a th:href="@{'/vehicles/' + ${vehicle.id}(pickupDate=${searchDto.pickupDate}, returnDate=${searchDto.returnDate})}"
+                                           class="btn btn-outline-primary btn-sm">
+                                            Details
+                                        </a>
+                                        <a th:href="@{/bookings/new(vehicleId=${vehicle.id}, pickupDate=${searchDto.pickupDate}, returnDate=${searchDto.returnDate})}"
+                                           class="btn btn-primary-custom btn-sm"
+                                           th:classappend="${vehicle.status.name() != 'AVAILABLE'} ? 'disabled' : ''">
+                                            Book Now
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

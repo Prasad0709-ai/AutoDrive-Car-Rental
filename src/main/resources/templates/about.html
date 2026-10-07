@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('About Us - AutoDrive Rentals')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5 py-3">
+        <!-- Hero Title -->
+        <div class="text-center max-w-700 mx-auto mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold mb-2">Our Mission</span>
+            <h1 class="fw-bold mb-3">Redefining Car Rental with Modern Technology & Trust</h1>
+            <p class="text-muted leading-relaxed">
+                Founded to eliminate the frustrating counter lines, hidden charges, and vehicle availability surprises of legacy rental agencies.
+            </p>
+        </div>
+
+        <div class="row g-5 align-items-center mb-5">
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1568844293986-8d0400bd4745?auto=format&fit=crop&w=800&q=80"
+                     alt="AutoDrive fleet in lot" class="img-fluid rounded-4 shadow">
+            </div>
+            <div class="col-lg-6">
+                <h3 class="fw-bold mb-3">Engineered for Transparency & Speed</h3>
+                <p class="text-secondary leading-relaxed">
+                    At AutoDrive, we believe your journey should begin long before you pick up the keys. Our real-time calendar availability engine guarantees that the vehicle you select is reserved exclusively for you—zero overbooking, zero compromises.
+                </p>
+                <div class="row g-3 mt-2">
+                    <div class="col-6">
+                        <div class="p-3 bg-white rounded-3 shadow-sm border">
+                            <h3 class="fw-bold text-primary mb-1">100%</h3>
+                            <span class="text-muted small">Guaranteed Vehicle Model</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 bg-white rounded-3 shadow-sm border">
+                            <h3 class="fw-bold text-primary mb-1">24/7</h3>
+                            <span class="text-muted small">Emergency Roadside Care</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Values Grid -->
+        <div class="row g-4 text-center mt-4">
+            <div class="col-md-4">
+                <div class="card border-0 p-4 rounded-4 shadow-sm h-100 bg-white">
+                    <div class="rounded-circle bg-primary bg-opacity-10 text-primary p-3 d-inline-flex justify-content-center align-items-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-hand-holding-usd fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold">Honest, Clear Pricing</h5>
+                    <p class="text-muted small mb-0">What you see is what you pay. Daily rates, security deposits, and taxes are clearly itemized before booking.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 p-4 rounded-4 shadow-sm h-100 bg-white">
+                    <div class="rounded-circle bg-success bg-opacity-10 text-success p-3 d-inline-flex justify-content-center align-items-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-shield-virus fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold">Pristine Fleet Standard</h5>
+                    <p class="text-muted small mb-0">Every vehicle undergoes rigorous mechanical inspection and clinical sanitization between every single rental.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 p-4 rounded-4 shadow-sm h-100 bg-white">
+                    <div class="rounded-circle bg-warning bg-opacity-10 text-warning p-3 d-inline-flex justify-content-center align-items-center mx-auto mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-bolt fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold">Fast Digital Pickup</h5>
+                    <p class="text-muted small mb-0">Skip the airport rental counters. Scan your QR code confirmation and drive off in under 3 minutes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

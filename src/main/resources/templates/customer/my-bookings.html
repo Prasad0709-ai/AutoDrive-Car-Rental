@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('My Bookings - AutoDrive')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">My Booking History</h3>
+                <p class="text-muted small mb-0">View all your current, upcoming, and past reservations</p>
+            </div>
+            <a th:href="@{/vehicles}" class="btn btn-primary-custom btn-sm">
+                <i class="fas fa-plus me-1"></i> Book Another Car
+            </a>
+        </div>
+
+        <!-- Flash messages -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show small" role="alert">
+            <i class="fas fa-check-circle me-1"></i> <span th:text="${successMessage}">Success</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show small" role="alert">
+            <i class="fas fa-exclamation-circle me-1"></i> <span th:text="${errorMessage}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+            <div th:if="${#lists.isEmpty(bookings)}" class="text-center py-5 text-muted small">
+                <i class="fas fa-calendar-times fs-1 text-muted mb-3"></i>
+                <h5 class="fw-bold">No Bookings Found</h5>
+                <p>You haven't made any car reservations with us yet.</p>
+                <a th:href="@{/vehicles}" class="btn btn-primary-custom btn-sm mt-2">Browse Fleet Now</a>
+            </div>
+
+            <div class="table-responsive" th:unless="${#lists.isEmpty(bookings)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small text-muted">
+                        <tr>
+                            <th>Booking Ref</th>
+                            <th>Vehicle</th>
+                            <th>Dates</th>
+                            <th>Pickup / Return</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        <tr th:each="b : ${bookings}">
+                            <td>
+                                <a th:href="@{'/my-bookings/' + ${b.id}}" class="fw-bold text-primary text-decoration-none" th:text="${b.bookingNumber}">BK-1002</a>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark" th:text="${b.vehicle.displayName}">Toyota Corolla</div>
+                                <span class="text-muted" style="font-size: 11px;" th:text="${b.vehicle.licensePlate}">Plate</span>
+                            </td>
+                            <td>
+                                <span th:text="${#temporals.format(b.pickupDate, 'MMM dd, yyyy') + ' to ' + #temporals.format(b.returnDate, 'MMM dd, yyyy')}">Dates</span>
+                            </td>
+                            <td>
+                                <span th:text="${b.pickupLocation}">Location</span>
+                            </td>
+                            <td>
+                                <strong class="text-dark" th:text="'$' + ${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 2, 'POINT')}">$285.00</strong>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${b.status.name() == 'CONFIRMED' || b.status.name() == 'COMPLETED'} ? 'bg-success' : (${b.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                      th:text="${b.status}">CONFIRMED</span>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${b.paymentStatus.name() == 'PAID'} ? 'bg-primary' : (${b.paymentStatus.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-secondary')"
+                                      th:text="${b.paymentStatus}">PAID</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a th:href="@{'/my-bookings/' + ${b.id}}" class="btn btn-outline-primary btn-sm py-1 px-2" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    <!-- Pay now if pending -->
+                                    <a th:if="${b.paymentStatus.name() == 'PENDING' && b.status.name() != 'CANCELLED'}"
+                                       th:href="@{'/payment/' + ${b.id}}" class="btn btn-warning btn-sm py-1 px-2 text-dark" title="Pay Now">
+                                        <i class="fas fa-credit-card"></i> Pay
+                                    </a>
+
+                                    <!-- Invoice if paid -->
+                                    <a th:if="${b.paymentStatus.name() == 'PAID'}"
+                                       th:href="@{'/invoice/' + ${b.id}}" class="btn btn-outline-secondary btn-sm py-1 px-2" title="Invoice">
+                                        <i class="fas fa-receipt"></i>
+                                    </a>
+
+                                    <!-- Cancel if eligible -->
+                                    <form th:if="${b.isCancellable()}" th:action="@{'/bookings/' + ${b.id} + '/cancel'}" method="post"
+                                          onsubmit="return confirm('Are you sure you want to cancel this booking?');" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2" title="Cancel Booking">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

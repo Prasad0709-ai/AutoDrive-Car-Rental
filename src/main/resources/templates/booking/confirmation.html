@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header('Booking Confirmation - ' + ${booking.bookingNumber})}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/my-bookings}" class="text-decoration-none">My Bookings</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${booking.bookingNumber}">Booking Details</li>
+            </ol>
+        </nav>
+
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 border-bottom pb-4 mb-4">
+                <div>
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill small fw-bold mb-1">Reservation Details</span>
+                    <h2 class="fw-bold mb-0 text-dark" th:text="${'Booking #' + booking.bookingNumber}">Booking #BK-1002</h2>
+                    <span class="text-muted small" th:text="${'Created on: ' + #temporals.format(booking.createdAt, 'MMM dd, yyyy HH:mm')}">Date</span>
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <span class="badge px-3 py-2 rounded-pill fs-6"
+                          th:classappend="${booking.status.name() == 'CONFIRMED' || booking.status.name() == 'COMPLETED'} ? 'bg-success' : (${booking.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger')"
+                          th:text="${booking.status}">CONFIRMED</span>
+                    <span class="badge px-3 py-2 rounded-pill fs-6"
+                          th:classappend="${booking.paymentStatus.name() == 'PAID'} ? 'bg-primary' : (${booking.paymentStatus.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-secondary')"
+                          th:text="${booking.paymentStatus}">PAID</span>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Vehicle Column -->
+                <div class="col-md-5">
+                    <div class="card border-0 bg-light rounded-4 overflow-hidden h-100">
+                        <img th:src="${booking.vehicle.imageUrl != null && !booking.vehicle.imageUrl.isEmpty() ? booking.vehicle.imageUrl : 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=800&q=80'}"
+                             th:alt="${booking.vehicle.displayName}" class="img-fluid" style="height: 220px; object-fit: cover;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold text-dark mb-1" th:text="${booking.vehicle.displayName}">Toyota Corolla</h5>
+                            <p class="text-muted small mb-3" th:text="${'License Plate: ' + booking.vehicle.licensePlate + ' &bull; ' + booking.vehicle.color}">Plate</p>
+                            <div class="d-flex flex-wrap gap-2 small">
+                                <span class="badge bg-white text-dark border"><i class="fas fa-users text-primary me-1"></i> <span th:text="${booking.vehicle.seats + ' Seats'}">5 Seats</span></span>
+                                <span class="badge bg-white text-dark border"><i class="fas fa-cog text-primary me-1"></i> <span th:text="${booking.vehicle.transmission}">AUTOMATIC</span></span>
+                                <span class="badge bg-white text-dark border"><i class="fas fa-gas-pump text-primary me-1"></i> <span th:text="${booking.vehicle.fuelType}">PETROL</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itinerary & Financials -->
+                <div class="col-md-7">
+                    <div class="p-3 bg-light rounded-3 mb-3">
+                        <h6 class="fw-bold mb-3 small text-uppercase text-muted"><i class="fas fa-map-marked-alt text-primary me-1"></i> Itinerary Details</h6>
+                        <div class="row g-3 small">
+                            <div class="col-6">
+                                <span class="text-muted d-block">Pickup Date & Time:</span>
+                                <strong class="text-dark" th:text="${#temporals.format(booking.pickupDate, 'EEEE, MMM dd, yyyy')}">Oct 01, 2026</strong>
+                                <div class="text-muted small mt-1" th:text="${booking.pickupLocation}">Downtown Hub</div>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted d-block">Return Date & Time:</span>
+                                <strong class="text-dark" th:text="${#temporals.format(booking.returnDate, 'EEEE, MMM dd, yyyy')}">Oct 04, 2026</strong>
+                                <div class="text-muted small mt-1" th:text="${booking.returnLocation}">Downtown Hub</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 mb-4">
+                        <h6 class="fw-bold mb-3 small text-uppercase text-muted"><i class="fas fa-file-invoice-dollar text-primary me-1"></i> Billing & Breakdown</h6>
+                        <div class="d-flex justify-content-between small text-muted mb-2">
+                            <span>Rental Rate:</span>
+                            <span class="text-dark fw-semibold" th:text="'$' + ${#numbers.formatDecimal(booking.vehicle.pricePerDay, 0, 'COMMA', 2, 'POINT')} + ' x ' + ${booking.rentalDays} + ' Days'">$45.00 x 3 Days</span>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-2">
+                            <span>Security Deposit:</span>
+                            <span class="text-dark fw-semibold" th:text="'$' + ${#numbers.formatDecimal(booking.vehicle.securityDeposit, 0, 'COMMA', 2, 'POINT')}">$150.00</span>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold text-dark border-top pt-2 fs-5">
+                            <span>Total Amount:</span>
+                            <span class="text-primary" th:text="'$' + ${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 2, 'POINT')}">$285.00</span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a th:if="${booking.paymentStatus.name() == 'PENDING' && booking.status.name() != 'CANCELLED'}"
+                           th:href="@{'/payment/' + ${booking.id}}" class="btn btn-warning fw-bold">
+                            <i class="fas fa-credit-card me-1"></i> Complete Payment Now
+                        </a>
+                        <a th:if="${booking.paymentStatus.name() == 'PAID'}"
+                           th:href="@{'/invoice/' + ${booking.id}}" class="btn btn-outline-primary fw-semibold">
+                            <i class="fas fa-file-invoice me-1"></i> View Invoice
+                        </a>
+                        <form th:if="${isCancellable}" th:action="@{'/bookings/' + ${booking.id} + '/cancel'}" method="post"
+                              onsubmit="return confirm('Are you sure you want to cancel this booking?');" class="d-inline">
+                            <button type="submit" class="btn btn-outline-danger fw-semibold">
+                                <i class="fas fa-times me-1"></i> Cancel Booking
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

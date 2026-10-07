@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(${isEdit} ? 'Edit Vehicle - Admin' : 'Add Vehicle - Admin')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a th:href="@{/admin/dashboard}" class="text-decoration-none">Admin</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/admin/vehicles}" class="text-decoration-none">Fleet</a></li>
+                <li class="breadcrumb-item active" th:text="${isEdit} ? 'Edit Vehicle' : 'Add Vehicle'">Add Vehicle</li>
+            </ol>
+        </nav>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                    <h3 class="fw-bold mb-1" th:text="${isEdit} ? 'Edit Vehicle Specifications' : 'Add New Vehicle to Fleet'">Add Vehicle</h3>
+                    <p class="text-muted small mb-4">Provide specifications, classification, rates, and imagery for the vehicle.</p>
+
+                    <form th:action="${isEdit} ? @{'/admin/vehicles/edit/' + ${vehicleDto.id}} : @{/admin/vehicles/add}"
+                          th:object="${vehicleDto}" method="post">
+
+                        <input type="hidden" th:field="*{id}">
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Vehicle Brand *</label>
+                                <input type="text" th:field="*{brand}" class="form-control" placeholder="Toyota, Mercedes, Tesla..." required>
+                                <div class="invalid-feedback d-block" th:errors="*{brand}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Model Name *</label>
+                                <input type="text" th:field="*{model}" class="form-control" placeholder="Corolla, E-Class, Model Y..." required>
+                                <div class="invalid-feedback d-block" th:errors="*{model}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Model Year</label>
+                                <input type="number" th:field="*{year}" class="form-control" placeholder="2024" min="2000" max="2030">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Color</label>
+                                <input type="text" th:field="*{color}" class="form-control" placeholder="Silver, Obsidian Black...">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-muted">License Plate *</label>
+                                <input type="text" th:field="*{licensePlate}" class="form-control" placeholder="NY-ABC-1234" required>
+                                <div class="invalid-feedback d-block" th:errors="*{licensePlate}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Category *</label>
+                                <select th:field="*{category}" class="form-select" required>
+                                    <option value="ECONOMY">Economy</option>
+                                    <option value="COMPACT">Compact</option>
+                                    <option value="SUV">SUV</option>
+                                    <option value="LUXURY">Luxury</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Fuel Type *</label>
+                                <select th:field="*{fuelType}" class="form-select" required>
+                                    <option value="PETROL">Petrol</option>
+                                    <option value="DIESEL">Diesel</option>
+                                    <option value="ELECTRIC">Electric</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Transmission *</label>
+                                <select th:field="*{transmission}" class="form-select" required>
+                                    <option value="AUTOMATIC">Automatic</option>
+                                    <option value="MANUAL">Manual</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Seating Capacity *</label>
+                                <input type="number" th:field="*{seats}" class="form-control" min="1" max="15" required>
+                                <div class="invalid-feedback d-block" th:errors="*{seats}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Daily Price (USD) *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" th:field="*{pricePerDay}" class="form-control" placeholder="45.00" required>
+                                </div>
+                                <div class="invalid-feedback d-block" th:errors="*{pricePerDay}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label small fw-semibold text-muted">Security Deposit (USD)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" th:field="*{securityDeposit}" class="form-control" placeholder="150.00">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold text-muted">Vehicle Image URL</label>
+                                <input type="url" th:field="*{imageUrl}" class="form-control" placeholder="https://images.unsplash.com/...">
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold text-muted">Vehicle Description & Features</label>
+                                <textarea th:field="*{description}" class="form-control" rows="3" placeholder="Highlight key features, engine specs, trunk room, entertainment system..."></textarea>
+                            </div>
+
+                            <div class="col-md-6" th:if="${isEdit}">
+                                <label class="form-label small fw-semibold text-muted">Vehicle Status</label>
+                                <select th:field="*{status}" class="form-select">
+                                    <option value="AVAILABLE">AVAILABLE</option>
+                                    <option value="RENTED">RENTED</option>
+                                    <option value="MAINTENANCE">MAINTENANCE</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6" th:if="${isEdit}">
+                                <label class="form-label small fw-semibold text-muted">Fleet Listing State</label>
+                                <select th:field="*{isAvailable}" class="form-select">
+                                    <option value="true">Active & Visible in Catalog</option>
+                                    <option value="false">Deactivated / Hidden</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a th:href="@{/admin/vehicles}" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom px-4 fw-semibold">
+                                <i class="fas fa-save me-1"></i> Save Vehicle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

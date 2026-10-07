@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header(${vehicle.displayName} + ' - Details')}">
+</head>
+<body class="bg-light">
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container my-5">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/vehicles}" class="text-decoration-none">Fleet</a></li>
+                <li class="breadcrumb-item active" aria-current="page" th:text="${vehicle.displayName}">Vehicle Details</li>
+            </ol>
+        </nav>
+
+        <div class="row g-4">
+            <!-- Left Column: Image Gallery, Specs, Reviews -->
+            <div class="col-lg-8">
+                <!-- Vehicle Hero Image -->
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 position-relative">
+                    <img th:src="${vehicle.imageUrl != null && !vehicle.imageUrl.isEmpty() ? vehicle.imageUrl : 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1200&q=80'}"
+                         th:alt="${vehicle.displayName}" class="img-fluid w-100" style="max-height: 480px; object-fit: cover;">
+                    <div class="position-absolute top-0 start-0 m-3 d-flex gap-2">
+                        <span class="badge bg-dark bg-opacity-75 px-3 py-2 rounded-pill fs-6" th:text="${vehicle.category}">ECONOMY</span>
+                        <span class="badge px-3 py-2 rounded-pill fs-6"
+                              th:classappend="${vehicle.status.name() == 'AVAILABLE'} ? 'bg-success' : (${vehicle.status.name() == 'RENTED'} ? 'bg-danger' : 'bg-warning text-dark')"
+                              th:text="${vehicle.status}">AVAILABLE</span>
+                    </div>
+                </div>
+
+                <!-- Vehicle Info & Specs -->
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <h2 class="fw-bold mb-1" th:text="${vehicle.brand + ' ' + vehicle.model}">Toyota Corolla</h2>
+                            <span class="text-muted" th:text="${'Model Year: ' + vehicle.year + ' &bull; License Plate: ' + vehicle.licensePlate}">Year 2023</span>
+                        </div>
+                        <div class="text-end">
+                            <div class="rating-stars fs-5">
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="fw-bold text-dark" th:text="${vehicle.rating}">4.8</span>
+                            </div>
+                            <span class="text-muted small" th:text="${vehicle.totalReviews + ' customer ratings'}">12 ratings</span>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mt-3 mb-2">Vehicle Specifications</h5>
+                    <div class="row g-3 my-2">
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 text-center">
+                                <i class="fas fa-users text-primary fs-4 mb-1"></i>
+                                <div class="small text-muted">Seating Capacity</div>
+                                <strong th:text="${vehicle.seats + ' Seats'}">5 Seats</strong>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 text-center">
+                                <i class="fas fa-cog text-primary fs-4 mb-1"></i>
+                                <div class="small text-muted">Transmission</div>
+                                <strong th:text="${vehicle.transmission}">AUTOMATIC</strong>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 text-center">
+                                <i class="fas fa-gas-pump text-primary fs-4 mb-1"></i>
+                                <div class="small text-muted">Fuel Engine</div>
+                                <strong th:text="${vehicle.fuelType}">PETROL</strong>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <div class="p-3 bg-light rounded-3 text-center">
+                                <i class="fas fa-palette text-primary fs-4 mb-1"></i>
+                                <div class="small text-muted">Exterior Color</div>
+                                <strong th:text="${vehicle.color}">Silver</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="fw-bold mt-4 mb-2">Description & Features</h5>
+                    <p class="text-secondary leading-relaxed" th:text="${vehicle.description}">
+                        Detailed description of the vehicle.
+                    </p>
+
+                    <!-- Inclusions -->
+                    <h6 class="fw-bold mt-3 mb-2">Included with Every AutoDrive Rental:</h6>
+                    <div class="row g-2 text-muted small">
+                        <div class="col-md-6"><i class="fas fa-check text-success me-2"></i> Free 24/7 Roadside Assistance</div>
+                        <div class="col-md-6"><i class="fas fa-check text-success me-2"></i> Sanitized and multi-point inspected</div>
+                        <div class="col-md-6"><i class="fas fa-check text-success me-2"></i> Standard Collision Protection</div>
+                        <div class="col-md-6"><i class="fas fa-check text-success me-2"></i> Flexible cancellation prior to pickup</div>
+                    </div>
+                </div>
+
+                <!-- Customer Reviews Section -->
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0">Verified Customer Reviews</h5>
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-semibold" th:text="${#lists.size(reviews) + ' Reviews'}">0 Reviews</span>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(reviews)}" class="text-center py-4 text-muted small">
+                        <i class="fas fa-comment-slash fs-2 mb-2 text-muted"></i>
+                        <p class="mb-0">No customer reviews yet. Rent this vehicle and be the first to share your experience!</p>
+                    </div>
+
+                    <div th:unless="${#lists.isEmpty(reviews)}" class="d-flex flex-column gap-3">
+                        <div th:each="rev : ${reviews}" class="p-3 bg-light rounded-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-dark" th:text="${rev.user.fullName}">John Doe</span>
+                                <div class="rating-stars">
+                                    <span th:each="i : ${#numbers.sequence(1, rev.rating)}"><i class="fas fa-star text-warning"></i></span>
+                                </div>
+                            </div>
+                            <p class="mb-1 text-secondary small" th:text="${rev.comment}">Great vehicle!</p>
+                            <span class="text-muted" style="font-size: 11px;" th:text="${#temporals.format(rev.createdAt, 'MMM dd, yyyy')}">Oct 01, 2026</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Sticky Booking & Live Availability Widget -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 85px;">
+                    <div class="d-flex justify-content-between align-items-baseline mb-3">
+                        <div>
+                            <span class="fs-2 fw-bold text-primary" th:text="'$' + ${#numbers.formatDecimal(vehicle.pricePerDay, 0, 'COMMA', 2, 'POINT')}">$45.00</span>
+                            <span class="text-muted small">/ day</span>
+                        </div>
+                        <div class="text-end text-muted small">
+                            Security Deposit: <strong class="text-dark" th:text="'$' + ${#numbers.formatDecimal(vehicle.securityDeposit, 0, 'COMMA', 2, 'POINT')}">$150.00</strong>
+                        </div>
+                    </div>
+
+                    <hr class="my-3">
+
+                    <h6 class="fw-bold mb-3"><i class="fas fa-calendar-check text-primary me-2"></i> Check Dates & Reserve</h6>
+
+                    <form th:action="@{/bookings/new}" method="get" id="bookingWidgetForm">
+                        <input type="hidden" id="vehicleId" name="vehicleId" th:value="${vehicle.id}">
+                        <input type="hidden" id="pricePerDayVal" th:value="${vehicle.pricePerDay}">
+                        <input type="hidden" id="securityDepositVal" th:value="${vehicle.securityDeposit}">
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Pickup Date</label>
+                            <input type="date" id="pickupDate" name="pickupDate" class="form-control" th:value="${pickupDate}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Return Date</label>
+                            <input type="date" id="returnDate" name="returnDate" class="form-control" th:value="${returnDate}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Pickup Location</label>
+                            <input type="text" name="pickupLocation" class="form-control" value="Main Downtown Hub" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Return Location</label>
+                            <input type="text" name="returnLocation" class="form-control" value="Main Downtown Hub" required>
+                        </div>
+
+                        <!-- Live Availability AJAX status box -->
+                        <div id="availabilityResult" class="mb-3"></div>
+
+                        <button type="button" id="btnCheckAvailability" class="btn btn-outline-primary w-100 mb-2 btn-sm fw-semibold">
+                            <i class="fas fa-search me-1"></i> Check Real-Time Availability
+                        </button>
+
+                        <!-- Price calculation summary box -->
+                        <div class="p-3 bg-light rounded-3 my-3">
+                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                <span>Rental Duration:</span>
+                                <strong id="rentalDaysDisplay" class="text-dark">3 Days</strong>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                <span>Estimated Subtotal:</span>
+                                <span id="rentalSubtotalDisplay" class="text-dark fw-semibold">$135.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mb-2">
+                                <span>Security Deposit (Refundable):</span>
+                                <span class="text-dark fw-semibold" th:text="'$' + ${#numbers.formatDecimal(vehicle.securityDeposit, 0, 'COMMA', 2, 'POINT')}">$150.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between fw-bold border-top pt-2 text-dark">
+                                <span>Estimated Total:</span>
+                                <span id="totalAmountDisplay" class="text-primary fs-5">$285.00</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btnProceedBooking" class="btn btn-primary-custom w-100 py-2 fw-semibold"
+                                th:classappend="${vehicle.status.name() != 'AVAILABLE'} ? 'disabled' : ''">
+                            <i class="fas fa-lock me-1"></i> Proceed to Reservation
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
