@@ -4,7 +4,9 @@
 > **Internship Track:** Java Full-Stack Internship  
 > **Architecture:** Spring Boot 3.x, Spring Data JPA, Spring Security, MySQL 8.x, Thymeleaf, Bootstrap 5  
 
----
+---## 🚀 Live Demo
+
+[🌐 Open AutoDrive Car Rental](https://autodrive-car-rental-production.up.railway.app)
 
 ## 1. Project Overview
 
